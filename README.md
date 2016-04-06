@@ -3,7 +3,9 @@ Converts an object to another according to a structure defined by a template
 
 ## Usage
 
-### `create(data, template)` method
+```
+var output = ObjectTemplating.create(data, template);
+```
 
 * `data`: it's an object with the data to convert (origin data source)
 * `template`: it's an object where each key is a destination path and its value is the corresponging origin path
