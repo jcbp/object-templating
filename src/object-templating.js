@@ -17,7 +17,10 @@
 			}
 			else {
 				for(var name in obj) {
-					if(obj.hasOwnProperty(name) && callback(obj[name], name) === false) {
+					if(
+						obj.hasOwnProperty(name) &&
+						callback(obj[name], name) === false
+					) {
 						break;
 					}
 				}
@@ -28,10 +31,42 @@
 		},
 		isArray: function(obj) {
 			return Object.prototype.toString.call(obj) === '[object Array]';
+		},
+		convertToValue: function(str) {
+			var value;
+			// number
+			if(Utils.isNumeric(str)) {
+				value = Number(str);
+			}
+			// array
+			else if(
+				str.substring(0, 1) == '[' &&
+				str.substring(str.length - 1) == ']'
+			) {
+				var arrayOfStrings = str.substring(1, str.length - 1).split(/, ?/);
+				value = [];
+				for(var i = 0; i < arrayOfStrings.length; i++) {
+					value.push(Utils.convertToValue(arrayOfStrings[i]));
+				}
+			}
+			// boolean
+			else if(str == 'true' || str == 'false') {
+				value = str == 'true';
+			}
+			// string
+			else {
+				value = str;
+			}
+			return value;
 		}
 	};
 	var split = function(path) {
-		return path.replace(/\[\]/g, '.[]').split('.');
+		if(path.substring(0, 1) == '>') {
+			return ['>', path.substring(1)];
+		}
+		else {
+			return path.replace(/\[\]/g, '.[]').split('.');
+		}
 	};
 	var join = function(path) {
 		return path.join('.').replace(/\.\[\]/g, '[]');
@@ -41,7 +76,10 @@
 		var key = path.shift(),
 			result = null;
 
-		if(key == '[]') {
+		if(key == '>') {
+			result = Utils.convertToValue(path[0]);
+		}
+		else if(key == '[]') {
 			result = [];
 			if(path.length === 0) {
 				Utils.forEach(obj, function(each) {

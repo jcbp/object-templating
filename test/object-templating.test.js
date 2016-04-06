@@ -61,4 +61,28 @@ describe('object-templating', function() {
 		expect(a.elements[1].prop.title).toEqual('the title');
 		expect(a.elements[2].prop.title).toEqual('the title');
 	});
+	it('assigns a number value', function() {
+		var a = ObjectTemplating.create(objA, {
+			'child.value': '>35'
+		});
+		expect(a.child.value).toEqual(35);
+	});
+	it('assigns an array value', function() {
+		var a = ObjectTemplating.create(objA, {
+			'child.value': '>[1, 2]'
+		});
+		expect(a.child.value).toEqual(jasmine.arrayContaining([1, 2]));
+	});
+	it('assigns a boolean value', function() {
+		var a = ObjectTemplating.create(objA, {
+			'child.value': '>true'
+		});
+		expect(a.child.value).toEqual(true);
+	});
+	it('assigns a string value', function() {
+		var a = ObjectTemplating.create(objA, {
+			'child.value': '>theValue'
+		});
+		expect(a.child.value).toEqual('theValue');
+	});
 });
