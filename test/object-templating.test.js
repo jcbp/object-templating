@@ -61,6 +61,16 @@ describe('object-templating', function() {
 		expect(a.elements[1].prop.title).toEqual('the title');
 		expect(a.elements[2].prop.title).toEqual('the title');
 	});
+	it('merges two arrays', function() {
+		objA.extraItems = [{name: 'text 1'}, {name: 'text 2'}];
+		var a = ObjectTemplating.create(objA, {
+			'elements[].title': 'items[].name',
+			'elements[].text': 'extraItems[].name'
+		});
+		expect(a.elements[1].title).toEqual('item 2');
+		expect(a.elements[1].text).toEqual('text 2');
+		expect(a.elements.length).toEqual(Math.max(objA.items.length, objA.extraItems.length));
+	});
 	it('assigns a number value', function() {
 		var a = ObjectTemplating.create(objA, {
 			'child.value': '>35'
