@@ -66,6 +66,18 @@ Example:
 }
 ```
 
+### Passing a function
+
+You can pass an array with the path string as the first element and a function as a second one.
+The function will be called after resolving the path value and before assinging it to the destination.
+
+Example:
+```
+{
+	"books[].author": ["bookstore.items[].author", String.prototype.toUpperCase.call]
+}
+```
+
 ## Complete example
 
 ### Data
@@ -117,11 +129,15 @@ var bookstoreData = {
 ### Template
 
 ```
+var capitalize = function(str) {
+	return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
 var template = {
 	"bookstore.name": ">Ateneo",
 	"bookstore.books[].name": "items[].name",
 	"bookstore.books[].author": "items[].info.author",
-	"bookstore.books[].genre": "items[].info.genre",
+	"bookstore.books[].genre": ["items[].info.genre", capitalize],
 	"bookstore.books[].optional.year": "items[].info.year",
 	"bookstore.books[].category": "category"
 };
@@ -143,7 +159,7 @@ var output = ObjectTemplating.create(bookstoreData, template);
 			{
 				"name": "El Aleph",
 				"author": "Jorge Luis Borges",
-				"genre": "fantasy",
+				"genre": "Fantasy",
 				"optional": {
 					"year": null
 				},
@@ -152,7 +168,7 @@ var output = ObjectTemplating.create(bookstoreData, template);
 			{
 				"name": "It",
 				"author": "Stephen King",
-				"genre": "horror",
+				"genre": "Horror",
 				"optional": {
 					"year": null
 				},
@@ -161,7 +177,7 @@ var output = ObjectTemplating.create(bookstoreData, template);
 			{
 				"name": "The Exorcist",
 				"author": "William Peter Blatty",
-				"genre": "horror",
+				"genre": "Horror",
 				"optional": {
 					"year": "1971"
 				},
@@ -170,7 +186,7 @@ var output = ObjectTemplating.create(bookstoreData, template);
 			{
 				"name": "The Hitchhiker's Guide to the Galaxy",
 				"author": "Douglas Adam",
-				"genre": "comedy",
+				"genre": "Comedy",
 				"optional": {
 					"year": null
 				},
@@ -179,7 +195,7 @@ var output = ObjectTemplating.create(bookstoreData, template);
 			{
 				"name": "Is Everyone Hanging Out Without Me?",
 				"author": "Mindy Kaling",
-				"genre": "comedy",
+				"genre": "Comedy",
 				"optional": {
 					"year": null
 				},

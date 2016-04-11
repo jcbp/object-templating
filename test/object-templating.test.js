@@ -1,5 +1,9 @@
-describe('object-templating', function() {
+describe('convertion-cases', function() {
 	var ObjectTemplating = require('../src/object-templating.js');
+
+	var capitalize = function(str) {
+		return str.charAt(0).toUpperCase() + str.slice(1);
+	};
 
 	var objA = {
 		title: 'the title',
@@ -94,5 +98,13 @@ describe('object-templating', function() {
 			'child.value': '>theValue'
 		});
 		expect(a.child.value).toEqual('theValue');
+	});
+	it('passes a function to process the value before assigning it', function() {
+		var a = ObjectTemplating.create(objA, {
+			'elements[].title': ['items[].name', capitalize]
+		});
+		expect(a.elements[0].title).toEqual('Item 1');
+		expect(a.elements[1].title).toEqual('Item 2');
+		expect(a.elements[2].title).toEqual('Item 3');
 	});
 });

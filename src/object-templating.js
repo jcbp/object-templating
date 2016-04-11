@@ -32,6 +32,9 @@
 		isArray: function(obj) {
 			return Object.prototype.toString.call(obj) === '[object Array]';
 		},
+		isFunction: function(f) {
+			return typeof f == 'function';
+		},
 		convertToValue: function(str) {
 			var value;
 			// number
@@ -105,7 +108,7 @@
 		}
 		return result;
 	};
-	var add = function(obj, data, path) {
+	var add = function(obj, data, path, func) {
 		path = path.slice();
 		var key = path.shift(),
 			isCollection = path[0] == '[]' ? !!path.shift() : false;
@@ -120,12 +123,11 @@
 		}
 
 		if(path.length === 0) {
-			if(isCollection) {
-				obj[key] = data.slice();
+			var value = isCollection ? data.slice() : data;
+			if(Utils.isFunction(func)) {
+				value = func(value);
 			}
-			else {
-				obj[key] = data;
-			}
+			obj[key] = value;
 		}
 		else if(isCollection) {
 			if(Utils.isArray(data)) {
@@ -133,17 +135,17 @@
 					if(!obj[key][i]) {
 						obj[key][i] = {};
 					}
-					add(obj[key][i], value, path);
+					add(obj[key][i], value, path, func);
 				});
 			}
 			else {
 				Utils.forEach(obj[key], function(value, i) {
-					add(obj[key][i], data, path);
+					add(obj[key][i], data, path, func);
 				});
 			}
 		}
 		else {
-			add(obj[key], data, path);
+			add(obj[key], data, path, func);
 		}
 	};
 	return {
@@ -159,17 +161,22 @@
 		 * @returns {object}    				The resulting object
 		 */
 		create: function(data, template, failCallback) {
-			var root = {};
-			Utils.forEach(template, function(origin, dest) {
-				var node = get(data, split(origin));
-				if(node) {
-					add(root, node, split(dest));
+			var result = {};
+			Utils.forEach(template, function(source, dest) {
+				var func = null;
+				if(Utils.isArray(source)) {
+					func = source[1];
+					source = source[0];
+				}
+				var value = get(data, split(source));
+				if(value) {
+					add(result, value, split(dest), func);
 				}
 				else if(typeof failCallback == 'function') {
-					failCallback(origin, dest);
+					failCallback(source, dest);
 				}
 			});
-			return root;
+			return result;
 		}
 	};
 });
