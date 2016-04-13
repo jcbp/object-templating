@@ -35,6 +35,9 @@
 		isFunction: function(f) {
 			return typeof f == 'function';
 		},
+		isObjectLike: function(value) {
+			return !!value && typeof value == 'object';
+		},
 		convertToValue: function(str) {
 			var value;
 			// number
@@ -63,6 +66,7 @@
 			return value;
 		}
 	};
+	var helpers = {};
 	var split = function(path) {
 		if(path.substring(0, 1) == '>') {
 			return ['>', path.substring(1)];
@@ -108,7 +112,7 @@
 		}
 		return result;
 	};
-	var add = function(obj, data, path, func) {
+	var set = function(obj, data, path, helper) {
 		path = path.slice();
 		var key = path.shift(),
 			isCollection = path[0] == '[]' ? !!path.shift() : false;
@@ -124,8 +128,8 @@
 
 		if(path.length === 0) {
 			var value = isCollection ? data.slice() : data;
-			if(Utils.isFunction(func)) {
-				value = func(value);
+			if(helper) {
+				value = helper(value);
 			}
 			obj[key] = value;
 		}
@@ -135,17 +139,17 @@
 					if(!obj[key][i]) {
 						obj[key][i] = {};
 					}
-					add(obj[key][i], value, path, func);
+					set(obj[key][i], value, path, helper);
 				});
 			}
 			else {
 				Utils.forEach(obj[key], function(value, i) {
-					add(obj[key][i], data, path, func);
+					set(obj[key][i], data, path, helper);
 				});
 			}
 		}
 		else {
-			add(obj[key], data, path, func);
+			set(obj[key], data, path, helper);
 		}
 	};
 	return {
@@ -163,20 +167,25 @@
 		create: function(data, template, failCallback) {
 			var result = {};
 			Utils.forEach(template, function(source, dest) {
-				var func = null;
-				if(Utils.isArray(source)) {
-					func = source[1];
-					source = source[0];
+				var helper = null;
+				if(Utils.isObjectLike(source)) {
+					helper = Utils.isFunction(helpers[source.helper]) ?
+						helpers[source.helper] :
+						null;
+					source = source.path;
 				}
 				var value = get(data, split(source));
 				if(value) {
-					add(result, value, split(dest), func);
+					set(result, value, split(dest), helper);
 				}
 				else if(typeof failCallback == 'function') {
 					failCallback(source, dest);
 				}
 			});
 			return result;
+		},
+		registerHelper: function(name, helper) {
+			helpers[name] = helper;
 		}
 	};
 });
