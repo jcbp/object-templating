@@ -8,7 +8,9 @@ var output = ObjectTemplating.create(data, template);
 ```
 
 * `data`: it's an object with the data to convert (origin data source)
-* `template`: it's an object where each key is a destination path and its value is the corresponging origin path
+* `template`: it's an object where each key is a destination path and its value is the corresponging source path
+
+## Defining a template
 
 ### Attribute assignment `"."`
 
@@ -66,15 +68,18 @@ Example:
 }
 ```
 
-### Passing a function
+### Using a helper
 
-You can pass an array with the path string as the first element and a function as a second one.
-The function will be called after resolving the path value and before assinging it to the destination.
+A helper is a function that will be called after resolving the source path value,
+which can make changes on the value before it is assingned to the destination.
+Instead of a source path string, you can pass an object that contains an attribute "path"
+and another attribute "helper".
+A helper should be previously defined by using `ObjectTemplating.registerHelper(name, helper)`.
 
 Example:
 ```
 {
-	"books[].author": ["bookstore.items[].author", String.prototype.toUpperCase.call]
+	"books[].author": {path: "bookstore.items[].author", helper: "capitalize"}
 }
 ```
 
@@ -126,24 +131,28 @@ var bookstoreData = {
 };
 ```
 
+### Helper
+
+```
+ObjectTemplating.registerHelper("capitalize", function(str) {
+	return str.charAt(0).toUpperCase() + str.slice(1);
+});
+```
+
 ### Template
 
 ```
-var capitalize = function(str) {
-	return str.charAt(0).toUpperCase() + str.slice(1);
-};
-
 var template = {
 	"bookstore.name": ">Ateneo",
 	"bookstore.books[].name": "items[].name",
 	"bookstore.books[].author": "items[].info.author",
-	"bookstore.books[].genre": ["items[].info.genre", capitalize],
+	"bookstore.books[].genre": {path: "items[].info.genre", helper: "capitalize"},
 	"bookstore.books[].optional.year": "items[].info.year",
 	"bookstore.books[].category": "category"
 };
 ```
 
-### Conversion
+### Creating an new object from the template
 
 ```
 var output = ObjectTemplating.create(bookstoreData, template);
