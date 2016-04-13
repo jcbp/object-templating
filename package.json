@@ -1,6 +1,6 @@
 {
   "name": "object-templating",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "converts an object to another according to a structure defined by a template",
   "main": "src/object-templating.js",
   "author": "jcbp",
