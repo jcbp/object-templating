@@ -63,7 +63,7 @@ Example:
 {
 	"general.floorNumber": ">3",
 	"books[].author": "bookstore.comedy.items[].author",
-	"books[].genre": ">comedy"
+	"books[].genre": ">comedy",
 	"books[].available": ">true"
 }
 ```
