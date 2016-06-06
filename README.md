@@ -14,8 +14,8 @@ var output = ObjectTemplating.create(data, template);
 
 ### Attribute assignment `"."`
 
-Use character point `"."` to define that an object is a child of another.
-The attribute is denoted by that follows the last point.
+Use the dot character `"."` to define an object as a child of another.
+The attribute is denoted by the following to the last dot.
 
 Example:
 ```
@@ -26,7 +26,7 @@ Example:
 
 ### Collection assignment `"[]"`
 
-Use brackets `"[]"` for define a collection.
+Use brackets `"[]"` to define a collection.
 If the brackets are present in both the origin and destination, it will iterate over the origin
 collection. This means that the destination will have the same length as the origin.
 
@@ -51,7 +51,7 @@ Example:
 
 ### Literal value assignment `">"`
 
-Use character `">"` for define a literal value on the origin.
+Use character `">"` to define a literal value on the origin.
 This value will be cast to one of the following data types:
 * boolean: if it's equal to true or false
 * array: if it's between brackets
